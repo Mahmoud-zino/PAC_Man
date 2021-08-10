@@ -23,7 +23,7 @@ public class PlayerMovement : Movement
         base.CanMove = GetComponentInChildren<PathDetector>().CanMove;
     }
 
-    private void Move(Vector2 direction)
+    public void Move(Vector2 direction)
     {
         base.Direction = new Vector2(Mathf.CeilToInt(direction.x), Mathf.CeilToInt(direction.y));
 
@@ -47,6 +47,11 @@ public class PlayerMovement : Movement
             this.transform.eulerAngles = new Vector3(0, 0, 270);
             this.transform.localScale = new Vector3(1, 1, 1);
         }
+    }
+
+    public Vector2 GetCurrentDirection()
+    {
+        return base.Direction;
     }
 
     private void OnDisable()
