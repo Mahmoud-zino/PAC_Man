@@ -10,7 +10,6 @@ public class PlayerMovement : MonoBehaviour
     private MainInput controls;
 
     private Vector2 direction = Vector2.right;
-    private bool canMove = true;
 
     private void OnEnable()
     {
@@ -44,13 +43,13 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (this.direction.y > 0)
         {
-            this.transform.localScale = new Vector3(1, 1, 1);
             this.transform.eulerAngles = new Vector3(0, 0, 90);
+            this.transform.localScale = new Vector3(1, 1, 1);
         }
         else if (this.direction.y < 0)
         {
-            this.transform.localScale = new Vector3(1, 1, 1);
             this.transform.eulerAngles = new Vector3(0, 0, 270);
+            this.transform.localScale = new Vector3(1, 1, 1);
         }
     }
 
@@ -60,17 +59,26 @@ public class PlayerMovement : MonoBehaviour
         Vector3 startPos = this.transform.position;
         Vector3 endPos = this.transform.position + new Vector3(direction.x, direction.y, 0);
 
-        while (elepsedTime < speed)
+        if(!GetComponentInChildren<PathDetector>().CanMove)
         {
-            this.transform.position = Vector3.Lerp(startPos, endPos, (elepsedTime / speed));
-            elepsedTime += Time.deltaTime;
-            yield return new WaitForEndOfFrame();
+            yield return new WaitForSeconds(0.01f);
+            yield return MoveBlockOverTime();
         }
+        else
+        {
+            while (elepsedTime < speed)
+            {
+                this.transform.position = Vector3.Lerp(startPos, endPos, (elepsedTime / speed));
+                elepsedTime += Time.deltaTime;
+                yield return new WaitForEndOfFrame();
+            }
 
-        this.transform.position = endPos;
+            this.transform.position = endPos;
 
-        yield return MoveBlockOverTime();
+            yield return MoveBlockOverTime();
+        }
     }
+
 
     private void OnDisable()
     {
