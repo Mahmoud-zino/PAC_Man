@@ -6,15 +6,16 @@ public class PathDetector : MonoBehaviour
 {
     public bool CanMove { get; private set; } = true;
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Map"))
-            this.CanMove = false;
-    }
+    [SerializeField]
+    private LayerMask checkMask; 
+    
+    Vector2 colliderPos;
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void Update()
     {
-        if (collision.CompareTag("Map"))
-            this.CanMove = true;
+        colliderPos = new Vector2(this.transform.position.x, this.transform.position.y);
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(colliderPos, 0.25f, checkMask);
+
+        CanMove = colliders.Length == 0;
     }
 }

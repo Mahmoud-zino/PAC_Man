@@ -18,40 +18,35 @@ public class PlayerMovement : Movement
         controls.Player.Movement.performed += ctx => Move(ctx.ReadValue<Vector2>());
     }
 
-    private void Update()
+    public override bool CanMove()
     {
-        base.CanMove = GetComponentInChildren<PathDetector>().CanMove;
+        return GetComponentInChildren<PathDetector>().CanMove;
     }
 
-    public void Move(Vector2 direction)
+    public override void Move(Vector2 direction)
     {
-        base.Direction = new Vector2(Mathf.CeilToInt(direction.x), Mathf.CeilToInt(direction.y));
+        base.Move(direction);
 
-        if(base.Direction.x > 0)
+        if(direction.x > 0)
         {
             this.transform.rotation = new Quaternion(0, 0, 0, 0);
             this.transform.localScale = new Vector3(1, 1, 1);
         }
-        else if (base.Direction.x < 0)
+        else if (direction.x < 0)
         {
             this.transform.rotation = new Quaternion(0, 0, 0, 0);
             this.transform.localScale = new Vector3(-1, 1, 1);
         }
-        else if (base.Direction.y > 0)
+        else if (direction.y > 0)
         {
             this.transform.eulerAngles = new Vector3(0, 0, 90);
             this.transform.localScale = new Vector3(1, 1, 1);
         }
-        else if (base.Direction.y < 0)
+        else if (direction.y < 0)
         {
             this.transform.eulerAngles = new Vector3(0, 0, 270);
             this.transform.localScale = new Vector3(1, 1, 1);
         }
-    }
-
-    public Vector2 GetCurrentDirection()
-    {
-        return base.Direction;
     }
 
     private void OnDisable()

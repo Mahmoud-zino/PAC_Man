@@ -7,27 +7,34 @@ public abstract class Movement : MonoBehaviour
     [SerializeField]
     private float speed = 0.3f;
 
-    protected Vector2 Direction = Vector2.right;
-    protected bool CanMove;
+    private Vector2 direction = Vector2.right;
 
     private void Start()
     {
         StartCoroutine(MoveBlockOverTime());
     }
 
-    protected void ChangeDirection(Vector2 direction)
+    public virtual void Move(Vector2 direction)
     {
-        this.Direction = direction;
+        this.direction = direction;
     }
 
+    public abstract bool CanMove();
+
+    public void SnapToPos(Vector3 pos)
+    {
+        StopAllCoroutines();
+        this.transform.position = pos;
+        StartCoroutine(MoveBlockOverTime());
+    }
 
     private IEnumerator MoveBlockOverTime()
     {
         float elepsedTime = 0;
         Vector3 startPos = this.transform.position;
-        Vector3 endPos = this.transform.position + new Vector3(Direction.x, Direction.y, 0);
+        Vector3 endPos = this.transform.position + new Vector3(direction.x, direction.y, 0);
 
-        if (!CanMove)
+        if (!this.CanMove())
         {
             yield return new WaitForSeconds(0.01f);
             yield return MoveBlockOverTime();
