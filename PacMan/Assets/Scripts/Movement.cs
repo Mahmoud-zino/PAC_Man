@@ -28,7 +28,7 @@ public abstract class Movement : MonoBehaviour
         StartCoroutine(MoveBlockOverTime());
     }
 
-    private IEnumerator MoveBlockOverTime()
+    public IEnumerator MoveBlockOverTime()
     {
         float elepsedTime = 0;
         Vector3 startPos = this.transform.position;
@@ -36,7 +36,7 @@ public abstract class Movement : MonoBehaviour
 
         if (!this.CanMove())
         {
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(0.2f);
             yield return MoveBlockOverTime();
         }
         else
