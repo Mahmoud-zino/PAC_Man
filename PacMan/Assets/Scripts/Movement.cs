@@ -9,26 +9,22 @@ public abstract class Movement : MonoBehaviour
 
     private Vector2 direction = Vector2.right;
 
-    private void Start()
-    {
-        StartCoroutine(MoveBlockOverTime());
-    }
-
-    public virtual void Move(Vector2 direction)
+    protected virtual void Move(Vector2 direction)
     {
         this.direction = direction;
     }
 
-    public abstract bool CanMove();
-
-    public void SnapToPos(Vector3 pos)
+    protected virtual bool CanMove()
     {
-        StopAllCoroutines();
-        this.transform.position = pos;
-        StartCoroutine(MoveBlockOverTime());
+        return true;
     }
 
-    public IEnumerator MoveBlockOverTime()
+    public virtual void SnapToPos(Vector3 pos)
+    {
+        this.transform.position = pos;
+    }
+
+    protected IEnumerator MoveBlockOverTime()
     {
         float elepsedTime = 0;
         Vector3 startPos = this.transform.position;
@@ -47,10 +43,7 @@ public abstract class Movement : MonoBehaviour
                 elepsedTime += Time.deltaTime;
                 yield return new WaitForEndOfFrame();
             }
-
             this.transform.position = endPos;
-
-            yield return MoveBlockOverTime();
         }
     }
 }

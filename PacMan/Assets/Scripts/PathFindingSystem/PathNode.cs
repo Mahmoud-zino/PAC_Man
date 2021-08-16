@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class PathNode
 {
+    private PathGrid parentGrid;
     public PathNode(Vector2Int index, bool isObstacle, PathGrid parentGrid)
     {
         this.Index = index;
         this.IsObstacle = isObstacle;
-        this.ParentGrid = parentGrid;
+        this.parentGrid = parentGrid;
     }
 
     public Vector2Int Index { get; }
@@ -16,7 +17,6 @@ public class PathNode
     public bool IsObstacle { get; }
 
     public PathNode ParentNode { get; set; }
-    public PathGrid ParentGrid { get; private set; }
 
     public int GCost { get; set; }
     public int HCost { get; set; }
@@ -24,5 +24,10 @@ public class PathNode
     public void CalculateFCost()
     {
         FCost = GCost + HCost;
+    }
+
+    public Vector3 GetWorldPosition()
+    {
+        return this.parentGrid.GetWorldPosition(this.Index);
     }
 }

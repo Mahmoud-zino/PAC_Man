@@ -3,29 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [DefaultExecutionOrder(1000)] //start after other scripts
-public class EnemyMovement : MonoBehaviour
+public class EnemyMovement : Movement
 {
-    [SerializeField]
-    private float speed = 0.3f;
-
     private PathAgent pathAgent;
     private Transform[] targets;
     private List<PathNode> pathNodes = new List<PathNode>();
 
     private int lastTarget = -1;
-    private Vector2 direction = Vector2.right;
 
     private void Start()
     {
         pathAgent = GetComponent<PathAgent>();
         targets = GameObject.Find("PathPoints").GetComponentsInChildren<Transform>();
         pathNodes = pathAgent.FindPath(this.transform, GetNewTarget());
-        StartCoroutine(MoveBlockOverTime());
+        StartCoroutine(MoveEnemy());
     }
 
     private Transform GetNewTarget()
     {
-        int targetIndex = Random.Range(0, targets.Length);
+        int targetIndex = Random.Range(1, targets.Length);
 
         if(targetIndex == lastTarget)
         {
@@ -39,37 +35,7 @@ public class EnemyMovement : MonoBehaviour
 
         }
         lastTarget = targetIndex;
-
         return targets[targetIndex];
-    }
-
-    public IEnumerator MoveBlockOverTime()
-    {
-        //search until a path was found
-        while (pathNodes.Count == 0)
-        {
-            pathNodes = pathAgent.FindPath(this.transform, GetNewTarget());
-        }
-
-        this.direction = CalculateDirection(pathNodes[0].ParentGrid.GetWorldPosition(pathNodes[0].Index));
-
-        pathNodes.RemoveAt(0);
-
-        //to move one block at a time
-        float elepsedTime = 0;
-        Vector3 startPos = this.transform.position;
-        Vector3 endPos = this.transform.position + new Vector3(direction.x, direction.y, 0);
-
-        while (elepsedTime < speed)
-        {
-            this.transform.position = Vector3.Lerp(startPos, endPos, (elepsedTime / speed));
-            elepsedTime += Time.deltaTime;
-            yield return new WaitForEndOfFrame();
-        }
-
-        this.transform.position = endPos;
-
-        yield return MoveBlockOverTime();
     }
 
     private Vector2 CalculateDirection(Vector2 pos)
@@ -91,5 +57,22 @@ public class EnemyMovement : MonoBehaviour
                 return Vector2.right;
             return Vector2.zero;
         }
+    }
+
+    private IEnumerator MoveEnemy()
+    {
+        //search until a path was found
+        while (pathNodes.Count == 0)
+        {
+            pathNodes = pathAgent.FindPath(this.transform, GetNewTarget());
+        }
+
+        base.Move(CalculateDirection(pathNodes[0].GetWorldPosition()));
+
+        yield return base.MoveBlockOverTime();
+
+        pathNodes.RemoveAt(0);
+
+        yield return MoveEnemy();
     }
 }

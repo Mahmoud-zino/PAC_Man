@@ -18,12 +18,30 @@ public class PlayerMovement : Movement
         controls.Player.Movement.performed += ctx => Move(ctx.ReadValue<Vector2>());
     }
 
-    public override bool CanMove()
+    private void Start()
+    {
+        StartCoroutine(MovePlayer());
+    }
+
+    protected override bool CanMove()
     {
         return GetComponentInChildren<PathDetector>().CanMove;
     }
 
-    public override void Move(Vector2 direction)
+    public IEnumerator MovePlayer()
+    {
+        yield return base.MoveBlockOverTime();
+        yield return MovePlayer();
+    }
+
+    public override void SnapToPos(Vector3 pos)
+    {
+        StopCoroutine(MovePlayer());
+        base.SnapToPos(pos);
+        StartCoroutine(MovePlayer());
+    }
+
+    protected override void Move(Vector2 direction)
     {
         base.Move(direction);
 
