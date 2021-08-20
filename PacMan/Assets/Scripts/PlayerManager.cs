@@ -8,8 +8,16 @@ public class PlayerManager : MonoBehaviour
 
     [SerializeField] private float powerUpTime = 5f;
 
+    private Animator playerAnim;
     private Coroutine lastRoutine;
     private bool isPowerUpActive;
+    private GameManager gameManager;
+
+    private void Start()
+    {
+        playerAnim = this.GetComponent<Animator>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+    }
 
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -23,11 +31,17 @@ public class PlayerManager : MonoBehaviour
                 score += 100;
             }
             else
-                Debug.LogError("Game Over");
+            {
+                playerAnim.SetTrigger("Die");
+
+                gameManager.GameOver();
+            }
         }
         else if(collision.CompareTag("PowerUp"))
         {
             Destroy(collision.gameObject);
+
+            playerAnim.SetTrigger("Eat");
 
             if(lastRoutine != null)
                 StopCoroutine(lastRoutine);
@@ -37,6 +51,7 @@ public class PlayerManager : MonoBehaviour
         else if(collision.CompareTag("Food"))
         {
             Destroy(collision.gameObject);
+            playerAnim.SetTrigger("Eat");
             score++;
         }
     }

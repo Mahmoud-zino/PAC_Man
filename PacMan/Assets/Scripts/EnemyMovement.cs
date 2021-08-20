@@ -8,6 +8,7 @@ public class EnemyMovement : Movement
     private PathAgent pathAgent;
     private Transform[] targets;
     private List<PathNode> pathNodes = new List<PathNode>();
+    private GameManager gameManager;
 
     private int lastTarget = -1;
 
@@ -15,6 +16,7 @@ public class EnemyMovement : Movement
     {
         pathAgent = GetComponent<PathAgent>();
         targets = GameObject.Find("PathPoints").GetComponentsInChildren<Transform>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         pathNodes = pathAgent.FindPath(this.transform, GetNewTarget());
         StartCoroutine(MoveEnemy());
     }
@@ -61,18 +63,23 @@ public class EnemyMovement : Movement
 
     private IEnumerator MoveEnemy()
     {
-        //search until a path was found
-        while (pathNodes.Count == 0)
+        if (gameManager.IsGameOver)
+            yield return null;
+        else
         {
-            pathNodes = pathAgent.FindPath(this.transform, GetNewTarget());
+            //search until a path was found
+            while (pathNodes.Count == 0)
+            {
+                pathNodes = pathAgent.FindPath(this.transform, GetNewTarget());
+            }
+
+            base.Move(CalculateDirection(pathNodes[0].GetWorldPosition()));
+
+            yield return base.MoveBlockOverTime();
+
+            pathNodes.RemoveAt(0);
+
+            yield return MoveEnemy();
         }
-
-        base.Move(CalculateDirection(pathNodes[0].GetWorldPosition()));
-
-        yield return base.MoveBlockOverTime();
-
-        pathNodes.RemoveAt(0);
-
-        yield return MoveEnemy();
     }
 }

@@ -11,6 +11,7 @@ public class PlayerMovement : Movement
     private Transform leftBorder;
 
     private MainInput controls;
+    private GameManager gameManager;
 
     private void OnEnable()
     {
@@ -25,6 +26,7 @@ public class PlayerMovement : Movement
 
     private void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         StartCoroutine(MovePlayer());
     }
 
@@ -35,8 +37,13 @@ public class PlayerMovement : Movement
 
     public IEnumerator MovePlayer()
     {
-        yield return base.MoveBlockOverTime();
-        yield return MovePlayer();
+        if (gameManager.IsGameOver)
+            yield return null;
+        else
+        {
+            yield return base.MoveBlockOverTime();
+            yield return MovePlayer();
+        }
     }
 
     private void Update()
