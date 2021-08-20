@@ -19,11 +19,6 @@ public abstract class Movement : MonoBehaviour
         return true;
     }
 
-    public virtual void SnapToPos(Vector3 pos)
-    {
-        this.transform.position = pos;
-    }
-
     protected IEnumerator MoveBlockOverTime()
     {
         float elepsedTime = 0;

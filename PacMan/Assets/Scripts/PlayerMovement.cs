@@ -5,6 +5,11 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : Movement
 {
+    [SerializeField]
+    private Transform rightBorder;
+    [SerializeField]
+    private Transform leftBorder;
+
     private MainInput controls;
 
     private void OnEnable()
@@ -34,10 +39,18 @@ public class PlayerMovement : Movement
         yield return MovePlayer();
     }
 
-    public override void SnapToPos(Vector3 pos)
+    private void Update()
+    {
+        if (this.transform.position.x > rightBorder.position.x)
+            SnapToPos(leftBorder.position + new Vector3(1, 0, 0));
+        else if (this.transform.position.x < leftBorder.position.x)
+            SnapToPos(rightBorder.position + new Vector3(-1, 0, 0));
+    }
+
+    private void SnapToPos(Vector3 pos)
     {
         StopCoroutine(MovePlayer());
-        base.SnapToPos(pos);
+        this.transform.position = pos;
         StartCoroutine(MovePlayer());
     }
 
