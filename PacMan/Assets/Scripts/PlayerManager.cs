@@ -58,12 +58,12 @@ public class PlayerManager : MonoBehaviour
 
     private IEnumerator PowerUpRoutine()
     {
-        Debug.Log("start powerup");
+        playerAnim.SetBool("PowerUp", true);
         isPowerUpActive = true;
 
         yield return new WaitForSeconds(powerUpTime);
 
         isPowerUpActive = false;
-        Debug.Log("end powerup");
+        playerAnim.SetBool("PowerUp", false);
     }
 }
